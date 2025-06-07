@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Flip Tracker</title>
+  <style>
+    :root {
+      --bg-light: #ffffff;
+      --text-light: #000000;
+      --button-light: royalblue;
+      --bg-dark: #121212;
+      --text-dark: #ffffff;
+      --button-dark: #03dac6;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    input, button {
+      margin: 5px 0;
+      padding: 10px;
+      font-size: 1rem;
+      width: 100%;
+      border-radius: 5px;
+      border: none;
+    }
+
+    .light-mode {
+      background-color: var(--bg-light);
+      color: var(--text-light);
+    }
+
+    .light-mode input {
+      background-color: #f0f0f0;
+      color: #000;
+    }
+
+    .light-mode button {
+      background-color: var(--button-light);
+      color: white;
+    }
+
+    .dark-mode {
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    .dark-mode input {
+      background-color: #1e1e1e;
+      color: #fff;
+    }
+
+    .dark-mode button {
+      background-color: var(--button-dark);
+      color: #000;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .flip-count {
+      margin-top: 20px;
+      font-size: 1.3rem;
+    }
+
+    .progress-container {
+      width: 100%;
+      background-color: #333;
+      border-radius: 20px;
+      margin-top: 10px;
+    }
+
+    .progress-bar {
+      height: 24px;
+      border-radius: 20px;
+      background-color: var(--button-dark);
+      text-align: center;
+      line-height: 24px;
+      color: #000;
+      font-weight: bold;
+      transition: width 0.3s ease;
+    }
+
+    .section {
+      margin-top: 20px;
+    }
+
+    .toggle-btn {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <button class="toggle-btn" onclick="toggleTheme()">🌗 Toggle Dark/Light Mode</button>
+
+  <h2>💸 Flip Goal Tracker</h2>
+
+  <div class="section">
+    <label>Start Amount ($):</label>
+    <input id="start" type="number" min="0">
+
+    <label>Target Amount ($):</label>
+    <input id="target" type="number" min="0">
+
+    <label>Flip Gain (%) per Flip:</label>
+    <input id="flipPercent" type="number" min="0">
+
+    <button onclick="calculateFlips()">Calculate Goal</button>
+    <p id="result"></p>
+  </div>
+
+  <div class="section">
+    <button onclick="addFlip()">➕ Add Flip</button>
+    <button onclick="resetFlips()">🔄 Reset</button>
+
+    <div class="flip-count">
+      Flips Done: <span id="flipCount">0</span><br>
+      Current Amount: $<span id="currentAmount">0.00</span>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar">0%</div>
+    </div>
+  </div>
+
+  <script>
+    let flipTally = JSON.parse(localStorage.getItem("flipTally")) || 0;
+    let startAmt = 0;
+    let targetAmt = 0;
+    let flipPercent = 0;
+
+    function calculateFlips() {
+      startAmt = parseFloat(document.getElementById("start").value);
+      targetAmt = parseFloat(document.getElementById("target").value);
+      flipPercent = parseFloat(document.getElementById("flipPercent").value) / 100;
+
+      if (!startAmt || !targetAmt || !flipPercent || startAmt >= targetAmt) {
+        document.getElementById("result").textContent = "❗ Enter valid inputs. Start must be less than target.";
+        return;
+      }
+
+      let amount = startAmt;
+      let count = 0;
+      while (amount < targetAmt) {
+        amount *= (1 + flipPercent);
+        count++;
+      }
+
+      document.getElementById("result").textContent = `🧮 You need ${count} flips to reach $${targetAmt.toLocaleString()}`;
+      updateDisplay();
+    }
+
+    function addFlip() {
+      flipTally++;
+      localStorage.setItem("flipTally", flipTally);
+      updateDisplay();
+    }
+
+    function resetFlips() {
+      flipTally = 0;
+      localStorage.removeItem("flipTally");
+      updateDisplay();
+    }
+
+    function updateDisplay() {
+      document.getElementById("flipCount").textContent = flipTally;
+
+      let amount = startAmt;
+      for (let i = 0; i < flipTally; i++) {
+        amount *= (1 + flipPercent);
+      }
+
+      amount = isNaN(amount) ? 0 : amount;
+      document.getElementById("currentAmount").textContent = amount.toFixed(2);
+
+      let progress = Math.min((amount / targetAmt) * 100, 100);
+      document.getElementById("progressBar").style.width = progress + "%";
+      document.getElementById("progressBar").textContent = Math.floor(progress) + "%";
+    }
+
+    // Theme Toggle
+    function toggleTheme() {
+      const body = document.body;
+      if (body.classList.contains("dark-mode")) {
+        body.classList.remove("dark-mode");
+        body.classList.add("light-mode");
+        localStorage.setItem("theme", "light");
+      } else {
+        body.classList.remove("light-mode");
+        body.classList.add("dark-mode");
+        localStorage.setItem("theme", "dark");
+      }
+    }
+
+    function loadTheme() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") {
+        document.body.classList.add("light-mode");
+      } else {
+        document.body.classList.add("dark-mode");
+      }
+    }
+
+    window.onload = () => {
+      loadTheme();
+      updateDisplay();
+    };
+  </script>
+</body>
+</html>
