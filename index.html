@@ -156,86 +156,96 @@
   </div>
 
   <script>
-    let flipTally = JSON.parse(localStorage.getItem("flipTally")) || 0;
-    let startAmt = 0;
-    let targetAmt = 0;
-    let flipPercent = 0;
+  let flipTally = JSON.parse(localStorage.getItem("flipTally")) || 0;
+  let startAmt = parseFloat(localStorage.getItem("startAmt")) || 0;
+  let targetAmt = parseFloat(localStorage.getItem("targetAmt")) || 0;
+  let flipPercent = parseFloat(localStorage.getItem("flipPercent")) || 0;
 
-    function calculateFlips() {
-      startAmt = parseFloat(document.getElementById("start").value);
-      targetAmt = parseFloat(document.getElementById("target").value);
-      flipPercent = parseFloat(document.getElementById("flipPercent").value) / 100;
+  function calculateFlips() {
+    startAmt = parseFloat(document.getElementById("start").value);
+    targetAmt = parseFloat(document.getElementById("target").value);
+    flipPercent = parseFloat(document.getElementById("flipPercent").value) / 100;
 
-      if (!startAmt || !targetAmt || !flipPercent || startAmt >= targetAmt) {
-        document.getElementById("result").textContent = "❗ Enter valid inputs. Start must be less than target.";
-        return;
-      }
-
-      let amount = startAmt;
-      let count = 0;
-      while (amount < targetAmt) {
-        amount *= (1 + flipPercent);
-        count++;
-      }
-
-      document.getElementById("result").textContent = `🧮 You need ${count} flips to reach $${targetAmt.toLocaleString()}`;
-      updateDisplay();
+    if (!startAmt || !targetAmt || !flipPercent || startAmt >= targetAmt) {
+      document.getElementById("result").textContent = "❗ Enter valid inputs. Start must be less than target.";
+      return;
     }
 
-    function addFlip() {
-      flipTally++;
-      localStorage.setItem("flipTally", flipTally);
-      updateDisplay();
+    // Save inputs
+    localStorage.setItem("startAmt", startAmt);
+    localStorage.setItem("targetAmt", targetAmt);
+    localStorage.setItem("flipPercent", flipPercent);
+
+    let amount = startAmt;
+    let count = 0;
+    while (amount < targetAmt) {
+      amount *= (1 + flipPercent);
+      count++;
     }
 
-    function resetFlips() {
-      flipTally = 0;
-      localStorage.removeItem("flipTally");
-      updateDisplay();
+    document.getElementById("result").textContent = `🧮 You need ${count} flips to reach $${targetAmt.toLocaleString()}`;
+    updateDisplay();
+  }
+
+  function addFlip() {
+    flipTally++;
+    localStorage.setItem("flipTally", flipTally);
+    updateDisplay();
+  }
+
+  function resetFlips() {
+    flipTally = 0;
+    localStorage.removeItem("flipTally");
+    updateDisplay();
+  }
+
+  function updateDisplay() {
+    document.getElementById("flipCount").textContent = flipTally;
+
+    // Update input fields with stored values
+    document.getElementById("start").value = startAmt || '';
+    document.getElementById("target").value = targetAmt || '';
+    document.getElementById("flipPercent").value = flipPercent ? (flipPercent * 100) : '';
+
+    let amount = startAmt;
+    for (let i = 0; i < flipTally; i++) {
+      amount *= (1 + flipPercent);
     }
 
-    function updateDisplay() {
-      document.getElementById("flipCount").textContent = flipTally;
+    amount = isNaN(amount) ? 0 : amount;
+    document.getElementById("currentAmount").textContent = amount.toFixed(2);
 
-      let amount = startAmt;
-      for (let i = 0; i < flipTally; i++) {
-        amount *= (1 + flipPercent);
-      }
+    let progress = Math.min((amount / targetAmt) * 100, 100);
+    document.getElementById("progressBar").style.width = progress + "%";
+    document.getElementById("progressBar").textContent = Math.floor(progress) + "%";
+  }
 
-      amount = isNaN(amount) ? 0 : amount;
-      document.getElementById("currentAmount").textContent = amount.toFixed(2);
-
-      let progress = Math.min((amount / targetAmt) * 100, 100);
-      document.getElementById("progressBar").style.width = progress + "%";
-      document.getElementById("progressBar").textContent = Math.floor(progress) + "%";
+  function toggleTheme() {
+    const body = document.body;
+    if (body.classList.contains("dark-mode")) {
+      body.classList.remove("dark-mode");
+      body.classList.add("light-mode");
+      localStorage.setItem("theme", "light");
+    } else {
+      body.classList.remove("light-mode");
+      body.classList.add("dark-mode");
+      localStorage.setItem("theme", "dark");
     }
+  }
 
-    function toggleTheme() {
-      const body = document.body;
-      if (body.classList.contains("dark-mode")) {
-        body.classList.remove("dark-mode");
-        body.classList.add("light-mode");
-        localStorage.setItem("theme", "light");
-      } else {
-        body.classList.remove("light-mode");
-        body.classList.add("dark-mode");
-        localStorage.setItem("theme", "dark");
-      }
+  function loadTheme() {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+      document.body.classList.add("light-mode");
+    } else {
+      document.body.classList.add("dark-mode");
     }
+  }
 
-    function loadTheme() {
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "light") {
-        document.body.classList.add("light-mode");
-      } else {
-        document.body.classList.add("dark-mode");
-      }
-    }
-
-    window.onload = () => {
-      loadTheme();
-      updateDisplay();
-    };
-  </script>
+  window.onload = () => {
+    loadTheme();
+    updateDisplay();
+  };
+</script>
 </body>
 </html>
