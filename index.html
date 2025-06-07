@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Flip Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
       --bg-light: #ffffff;
@@ -13,20 +14,28 @@
       --button-dark: #03dac6;
     }
 
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 40px auto;
+      margin: 0;
       padding: 20px;
       transition: background-color 0.3s, color 0.3s;
     }
 
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
     input, button {
-      margin: 5px 0;
-      padding: 10px;
-      font-size: 1rem;
       width: 100%;
-      border-radius: 5px;
+      padding: 12px;
+      margin: 8px 0;
+      font-size: 1rem;
+      border-radius: 8px;
       border: none;
     }
 
@@ -42,7 +51,7 @@
 
     .light-mode button {
       background-color: var(--button-light);
-      color: white;
+      color: #fff;
     }
 
     .dark-mode {
@@ -61,12 +70,12 @@
     }
 
     button:hover {
-      opacity: 0.9;
+      opacity: 0.95;
     }
 
     .flip-count {
-      margin-top: 20px;
-      font-size: 1.3rem;
+      font-size: 1.2rem;
+      margin-top: 16px;
     }
 
     .progress-container {
@@ -87,45 +96,62 @@
       transition: width 0.3s ease;
     }
 
-    .section {
-      margin-top: 20px;
-    }
-
     .toggle-btn {
       margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    @media (max-width: 480px) {
+      h2 {
+        font-size: 1.4rem;
+        text-align: center;
+      }
+
+      .flip-count {
+        font-size: 1rem;
+      }
+
+      input, button {
+        font-size: 1rem;
+        padding: 10px;
+      }
     }
   </style>
 </head>
 <body>
-  <button class="toggle-btn" onclick="toggleTheme()">🌗 Toggle Dark/Light Mode</button>
+  <div class="container">
+    <button class="toggle-btn" onclick="toggleTheme()">🌗 Toggle Dark/Light Mode</button>
+    <h2>💸 Flip Goal Tracker</h2>
 
-  <h2>💸 Flip Goal Tracker</h2>
+    <div>
+      <label>Start Amount ($):</label>
+      <input id="start" type="number" min="0" placeholder="e.g. 100">
 
-  <div class="section">
-    <label>Start Amount ($):</label>
-    <input id="start" type="number" min="0">
+      <label>Target Amount ($):</label>
+      <input id="target" type="number" min="0" placeholder="e.g. 5000">
 
-    <label>Target Amount ($):</label>
-    <input id="target" type="number" min="0">
+      <label>Flip Gain (%) per Flip:</label>
+      <input id="flipPercent" type="number" min="0" placeholder="e.g. 50">
 
-    <label>Flip Gain (%) per Flip:</label>
-    <input id="flipPercent" type="number" min="0">
-
-    <button onclick="calculateFlips()">Calculate Goal</button>
-    <p id="result"></p>
-  </div>
-
-  <div class="section">
-    <button onclick="addFlip()">➕ Add Flip</button>
-    <button onclick="resetFlips()">🔄 Reset</button>
-
-    <div class="flip-count">
-      Flips Done: <span id="flipCount">0</span><br>
-      Current Amount: $<span id="currentAmount">0.00</span>
+      <button onclick="calculateFlips()">Calculate Goal</button>
+      <p id="result"></p>
     </div>
 
-    <div class="progress-container">
-      <div class="progress-bar" id="progressBar">0%</div>
+    <div>
+      <button onclick="addFlip()">➕ Add Flip</button>
+      <button onclick="resetFlips()">🔄 Reset</button>
+
+      <div class="flip-count">
+        Flips Done: <span id="flipCount">0</span><br>
+        Current Amount: $<span id="currentAmount">0.00</span>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar">0%</div>
+      </div>
     </div>
   </div>
 
@@ -184,7 +210,6 @@
       document.getElementById("progressBar").textContent = Math.floor(progress) + "%";
     }
 
-    // Theme Toggle
     function toggleTheme() {
       const body = document.body;
       if (body.classList.contains("dark-mode")) {
