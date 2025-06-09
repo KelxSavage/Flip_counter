@@ -119,6 +119,23 @@
         padding: 10px;
       }
     }
+
+    .cashapp-btn {
+      background-color: #00d632;
+      color: white;
+      font-weight: bold;
+      border-radius: 8px;
+      padding: 12px;
+      width: 100%;
+      margin-top: 8px;
+      font-size: 1rem;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .cashapp-btn:hover {
+      opacity: 0.9;
+    }
   </style>
 </head>
 <body>
@@ -153,6 +170,13 @@
         <div class="progress-bar" id="progressBar">0%</div>
       </div>
     </div>
+
+    <!-- Support via CashApp -->
+    <div style="margin-top: 30px; text-align: center;">
+      <p>💚 Like this tool? Support via CashApp</p>
+      <a href="https://cash.app/$Kelxsavage" target="_blank" class="cashapp-btn">💵 Support via CashApp</a>
+    </div>
+
   </div>
 
   <script>
@@ -171,7 +195,6 @@
       return;
     }
 
-    // Save inputs
     localStorage.setItem("startAmt", startAmt);
     localStorage.setItem("targetAmt", targetAmt);
     localStorage.setItem("flipPercent", flipPercent);
@@ -202,7 +225,6 @@
   function updateDisplay() {
     document.getElementById("flipCount").textContent = flipTally;
 
-    // Update input fields with stored values
     document.getElementById("start").value = startAmt || '';
     document.getElementById("target").value = targetAmt || '';
     document.getElementById("flipPercent").value = flipPercent ? (flipPercent * 100) : '';
@@ -215,37 +237,4 @@
     amount = isNaN(amount) ? 0 : amount;
     document.getElementById("currentAmount").textContent = amount.toFixed(2);
 
-    let progress = Math.min((amount / targetAmt) * 100, 100);
-    document.getElementById("progressBar").style.width = progress + "%";
-    document.getElementById("progressBar").textContent = Math.floor(progress) + "%";
-  }
-
-  function toggleTheme() {
-    const body = document.body;
-    if (body.classList.contains("dark-mode")) {
-      body.classList.remove("dark-mode");
-      body.classList.add("light-mode");
-      localStorage.setItem("theme", "light");
-    } else {
-      body.classList.remove("light-mode");
-      body.classList.add("dark-mode");
-      localStorage.setItem("theme", "dark");
-    }
-  }
-
-  function loadTheme() {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "light") {
-      document.body.classList.add("light-mode");
-    } else {
-      document.body.classList.add("dark-mode");
-    }
-  }
-
-  window.onload = () => {
-    loadTheme();
-    updateDisplay();
-  };
-</script>
-</body>
-</html>
+    let progress = Math.min((amount / targetAmt) * 100, 100*
